@@ -75,6 +75,9 @@ Hood.internal.getRealFd = function (inputFd) {
         return Hood._namedInstances[inputFd];
     };
 };
+Hood.internal.realRender = function (rawRender) {
+    return rawRender;
+};
 Hood.instanceMethod.rerender = function (argv) {
     document.querySelector(`[hood-fd="${this.__fd}"]`).outerHTML = this.render();
 };
@@ -96,7 +99,10 @@ Hood.create = function (componentClassName, src) {
     };
     _ni._src = src;
     _ni.init = Hood._definedComponents[componentClassName].init;
-    _ni.render = Hood._definedComponents[componentClassName].render;
+    _ni.raw_render = Hood._definedComponents[componentClassName].render;
+    _ni.render = function () {
+        return Hood.internal.realRender(_ni.raw_render());
+    };
     _ni._rerender = Hood.instanceMethod.rerender;
     Object.keys(Hood._definedComponents[componentClassName].methods).map(function (methodName) {
         _ni[methodName] = Hood._definedComponents[componentClassName].methods[methodName];
